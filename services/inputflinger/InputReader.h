@@ -84,8 +84,11 @@ struct InputReaderConfiguration {
         // The presence of an external stylus has changed.
         CHANGE_EXTERNAL_STYLUS_PRESENCE = 1 << 7,
 
+		// Swap keys changed.
+        CHANGE_SWAP_KEYS = 1 << 8,
+		
         // The pointer capture mode has changed.
-        CHANGE_POINTER_CAPTURE = 1 << 8,
+        CHANGE_POINTER_CAPTURE = 1 << 9,
 
         // The set of disabled input devices (disabledDevices) has changed.
         CHANGE_ENABLED_STATE = 1 << 9,
@@ -180,6 +183,9 @@ struct InputReaderConfiguration {
     // True if pointer capture is enabled.
     bool pointerCapture;
 
+	// Swap back with recents button
+    bool swapKeys;
+	
     // The set of currently disabled input devices.
     SortedVector<int32_t> disabledDevices;
 
@@ -199,13 +205,13 @@ struct InputReaderConfiguration {
             pointerGestureSwipeMaxWidthRatio(0.25f),
             pointerGestureMovementSpeedRatio(0.8f),
             pointerGestureZoomSpeedRatio(0.3f),
-            showTouches(false) { }
+			showTouches(false),
+			swapKeys(false) { }
 
     bool getDisplayViewport(ViewportType viewportType, const String8* displayId,
             DisplayViewport* outViewport) const;
     void setPhysicalDisplayViewport(ViewportType viewportType, const DisplayViewport& viewport);
     void setVirtualDisplayViewports(const Vector<DisplayViewport>& viewports);
-
 
     void dump(String8& dump) const;
     void dumpViewport(String8& dump, const DisplayViewport& viewport) const;
@@ -1103,6 +1109,8 @@ private:
 
     int32_t mOrientation; // orientation for dpad keys
 
+    bool mSwapKeys; // swap back with recents button
+
     Vector<KeyDown> mKeyDowns; // keys that are down
     int32_t mMetaState;
     nsecs_t mDownTime; // time of most recent key down
@@ -1133,6 +1141,8 @@ private:
     void processKey(nsecs_t when, bool down, int32_t scanCode, int32_t usageCode);
 
     bool updateMetaStateIfNeeded(int32_t keyCode, bool down);
+
+    int getAdjustedKeyCode(int keyCode);
 
     ssize_t findKeyDown(int32_t scanCode);
 
